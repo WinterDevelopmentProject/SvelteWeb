@@ -1,11 +1,11 @@
 # Stage 1: Dependencies
-FROM node:20-alpine AS deps
+FROM node:20 AS deps
 WORKDIR /app
 COPY package*.json ./
 RUN npm install --frozen-lockfile
 
 # Stage 2: Builder
-FROM node:20-alpine AS builder
+FROM node:20 AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -24,4 +24,4 @@ COPY --from=builder /app/build ./build
 
 EXPOSE 3000
 
-CMD ["node", "-e", "import('./build/index.js')"]
+CMD ["node", "build"]
