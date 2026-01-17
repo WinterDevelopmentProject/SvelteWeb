@@ -1,1 +1,1 @@
-<a href="/canvas">Canvas</a>
+<a href="canvas">Canvas</a>
