@@ -43,6 +43,8 @@
 			on:input={() => canvasRef.setStroke(strokeColor, strokeWidth)}
 		/>
 	</label>
+	<button on:click={() => canvasRef.undo()}>Undo</button>
+	<button on:click={() => canvasRef.redo()}>Redo</button>
 	<button on:click={() => canvasRef.clearCanvas()}>Clear Canvas</button>
 	<button
 		on:click={() => {

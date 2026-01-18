@@ -10,6 +10,9 @@
 	let ctx: CanvasRenderingContext2D | null;
 	let isDrawing = false;
 	let buffer: DrawBuffer[] = [];
+	let currentAction: DrawBuffer[] = [];
+	let undoStack: DrawBuffer[][] = [];
+	let redoStack: DrawBuffer[][] = [];
 	let currentStroke: { color: string; width: number } = { color: '#000', width: 2 };
 
 	const getPos = (e: MouseEvent) => {
@@ -39,12 +42,13 @@
 	function startDrawing(e: MouseEvent) {
 		if (!ctx) return;
 		isDrawing = true;
+		currentAction = [];
 		const pos = getPos(e);
-		buffer.push({ type: 'start', data: { ...pos } });
+		currentAction.push({ type: 'start', data: { ...pos } });
 
 		if (ctx?.strokeStyle !== currentStroke.color || ctx?.lineWidth !== currentStroke.width) {
-			buffer.push({ type: 'setStroke', data: { ...currentStroke } });
-      applyStroke(currentStroke);
+			currentAction.push({ type: 'setStroke', data: { ...currentStroke } });
+			applyStroke(currentStroke);
 
 			ctx!.lineCap = 'round';
 			ctx!.lineJoin = 'round';
@@ -59,7 +63,8 @@
 	function stopDrawing() {
 		if (!isDrawing) return;
 		isDrawing = false;
-		buffer.push({ type: 'stop' });
+		currentAction.push({ type: 'stop' });
+		commitAction(currentAction);
 	}
 
 	function drawCircle(x: number, y: number) {
@@ -71,16 +76,31 @@
 		if (!isDrawing || !ctx) return;
 
 		const { x, y } = getPos(e);
-		buffer.push({ type: 'draw', data: { x, y } });
+		currentAction.push({ type: 'draw', data: { x, y } });
 
 		ctx.lineTo(x, y);
 		ctx.stroke();
 	}
 
+	function commitAction(action: DrawBuffer[]) {
+		if (!action.length) return;
+		undoStack.push(action);
+		redoStack = [];
+		rebuildBuffer();
+	}
+
+	function rebuildBuffer() {
+		buffer = undoStack.flat();
+		drawFromBuffer(buffer);
+	}
+
 	export function clearCanvas() {
 		if (ctx && canvas) {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			buffer = [{ type: 'clear' }];
+			const action: DrawBuffer[] = [{ type: 'clear' }];
+			undoStack.push(action);
+			redoStack = [];
+			rebuildBuffer();
 		}
 	}
 
@@ -129,6 +149,19 @@
 					break;
 			}
 		}
+	}
+
+	export function undo() {
+		if (!undoStack.length) return;
+		const action = undoStack.pop()!;
+		redoStack.push(action);
+		rebuildBuffer();
+	}
+	export function redo() {
+		if (!redoStack.length) return;
+		const action = redoStack.pop()!;
+		undoStack.push(action);
+		rebuildBuffer();
 	}
 </script>
 
