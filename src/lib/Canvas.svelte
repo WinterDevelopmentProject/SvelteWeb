@@ -14,6 +14,7 @@
 	let undoStack: DrawBuffer[][] = [];
 	let redoStack: DrawBuffer[][] = [];
 	let currentStroke: { color: string; width: number } = { color: '#000', width: 2 };
+	let appliedIndex = 0;
 
 	const getPos = (e: MouseEvent) => {
 		const rect = canvas.getBoundingClientRect();
@@ -115,11 +116,14 @@
 	export function drawFromBuffer(input: DrawBuffer[]) {
 		if (!ctx) return;
 
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		if (input.length < appliedIndex) {
+			appliedIndex = 0;
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+		}
 
-		let drawing = false;
+		for (let i = appliedIndex; i < input.length; i++) {
+			const item = input[i];
 
-		for (const item of input) {
 			switch (item.type) {
 				case 'clear':
 					ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -133,22 +137,20 @@
 					const { x, y } = item.data as { x: number; y: number };
 					ctx.beginPath();
 					ctx.moveTo(x, y);
-					drawing = true;
 					break;
 				}
 
 				case 'draw':
-					if (!drawing) break;
 					const { x, y } = item.data as { x: number; y: number };
 					ctx.lineTo(x, y);
 					ctx.stroke();
 					break;
 
 				case 'stop':
-					drawing = false;
 					break;
 			}
 		}
+		appliedIndex = input.length;
 	}
 
 	export function undo() {
