@@ -23,11 +23,13 @@
 <div class="canvas-app">
 	<canvas
 		bind:this={canvas}
-		on:mousedown={(e) => drawer?.startDrawing(e)}
-		on:mousemove={(e) => drawer?.draw(e)}
-		on:mouseup={() => drawer?.stopDrawing()}
-		on:mouseleave={() => drawer?.stopDrawing()}
-		style="border: 1px solid black; touch-action: none;"
+    on:touchstart|preventDefault={() => {}}
+    
+		on:pointerdown={(e) => drawer?.startDrawing(e)}
+		on:pointermove={(e) => drawer?.draw(e)}
+		on:pointerup={() => drawer?.stopDrawing()}
+    on:pointercancel={() => drawer?.stopDrawing()}
+		style="border: 1px solid black;"
 	></canvas>
 
 	<div class="controls">
@@ -60,10 +62,16 @@
 <style>
 	canvas {
 		width: 100%;
+
+    touch-action: none;
+    user-select: none;
 	}
 
 	.canvas-app {
 		width: 100%;
 		height: 100%;
+
+    touch-action: none;
+    user-select: none;
 	}
 </style>

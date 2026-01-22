@@ -39,7 +39,7 @@ export class ArtistDrawer extends Drawer {
 		}
 	}
 
-	private getPos(e: MouseEvent) {
+	private getPos(e: PointerEvent) {
 		const rect = this.canvas.getBoundingClientRect();
 		return {
 			x: (e.clientX - rect.left) * (this.canvas.width / rect.width),
@@ -52,7 +52,9 @@ export class ArtistDrawer extends Drawer {
 		this.undoStack = [];
 	}
 
-	public startDrawing(e: MouseEvent) {
+	public startDrawing(e: PointerEvent) {
+    (e.target as Element).setPointerCapture(e.pointerId);
+    
 		this.isDrawing = true;
 		const pos = this.getPos(e);
 
@@ -77,7 +79,7 @@ export class ArtistDrawer extends Drawer {
 		this.undoStack = [];
 	}
 
-	public draw(e: MouseEvent) {
+	public draw(e: PointerEvent) {
 		if (!this.isDrawing) return;
 
 		const pos = this.getPos(e);
