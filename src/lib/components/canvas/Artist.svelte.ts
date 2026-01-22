@@ -26,14 +26,14 @@ export class ArtistDrawer extends Drawer {
 
 		const isMod = e.ctrlKey || e.metaKey;
 
-		if (isMod && e.key === 'z') {
+		if (isMod && e.key.toLowerCase() === 'z') {
 			e.preventDefault();
 			if (e.shiftKey) {
 				this.redo();
 			} else {
 				this.undo();
 			}
-		} else if (isMod && e.key === 'd') {
+		} else if (isMod && e.key.toLowerCase() === 'd') {
 			e.preventDefault();
 			this.clear();
 		}
