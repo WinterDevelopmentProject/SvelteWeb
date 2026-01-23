@@ -30,6 +30,8 @@
   }
 </script>
 
+<h2>Lobby</h2>
+
 {#if roomId}
   <p>Current Room ID: {roomId}</p>
   <p>User Name: {userName}</p>
