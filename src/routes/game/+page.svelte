@@ -1,16 +1,16 @@
 <script lang='ts'>
-  import { goto } from '$app/navigation';
+  import Lobby from './Lobby.svelte';
+  import Play from './Play.svelte';
 
-  function join() {
-    const roomId = prompt('Enter Room ID: (나중에 바꿈ㅋㅋ)');
-
-    if (roomId && roomId.trim() !== '') {
-      goto(`game/lobby?roomId=${roomId.trim()}`);
-    }
-  }
+  import { gameState } from './GameState';
 </script>
 
 <h1>Title</h1>
 
-<a href="game/lobby">Create</a>
-<button on:click={join}>Join</button>
+{#if $gameState === 'lobby'}
+  <Lobby />
+{:else if $gameState === 'play'}
+  <Play />
+{:else}
+  <p>Game Ended</p>
+{/if}
