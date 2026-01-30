@@ -154,4 +154,10 @@ export class ArtistDrawer extends Drawer {
 	public getundoStack() {
 		return this.undoStack;
 	}
+
+  public flushSocketBuffer() {
+    const buffer = [...this.socketBuffer];
+    this.socketBuffer = [];
+    return buffer;
+  }
 }
